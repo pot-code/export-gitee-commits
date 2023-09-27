@@ -2,14 +2,38 @@ from typing import List
 
 import pandas as pd
 
-from .commit import CommitFetcher
+from .commit import Commit
 
 
-def msg_aggregation(messages: List[str]):
-    return [f'{i + 1}. {msg}' for i, msg in enumerate(messages)]
+class CommitsDataFrame:
+    def __init__(self, commits: List[Commit]):
+        self.__df = pd.DataFrame(commits)
+
+    def format_date(self):
+        self.__df['date'] = self.__df['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+
+    def format_message(self):
+        self.__df['message'] = self.__df['message'].apply(lambda x: x.replace('\n', ''))
+
+    def group_by_date(self):
+        def number_messages(messages: List[str]):
+            return [f'{i + 1}. {msg}' for i, msg in enumerate(messages)]
+
+        grouped_df = self.__df.groupby(['uid', 'author', 'date'])['message'].agg(
+            lambda x: '\n'.join(number_messages(x)))
+        self.__df = grouped_df.reset_index()
+
+    def sort_by_date(self, ascending: bool = False):
+        self.__df = self.__df.sort_values(by='date', ascending=ascending)
+
+    def remap_columns(self):
+        self.__df = self.__df.rename(columns={'author': '作者', 'date': '日期', 'message': '提交信息'})
+
+    def export_to_excel(self, path: str):
+        self.__df.to_excel(path, sheet_name="Sheet1", index=False)
 
 
-class GiteeCommits:
+class CommitsWriter:
     def __init__(self):
         self.__commits = []
 
@@ -17,25 +41,10 @@ class GiteeCommits:
         self.__commits += commits
 
     def save(self):
-        df = self.__create_data_frame()
-        df.to_excel("./output.xlsx", sheet_name='Sheet1', index=False)
-
-    def __create_data_frame(self):
-        df = pd.DataFrame(self.__commits)
-        df['message'] = df['message'].apply(lambda x: x.replace('\n', ''))
-        df['date'] = df['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
-
-        grouped_df = df.groupby(['uid', 'author', 'date'])['message'].agg(
-            lambda x: '\n'.join(msg_aggregation(x)))
-        grouped_df = grouped_df.reset_index()
-        sorted_df = grouped_df.sort_values(by='date', ascending=False)
-        result_df = sorted_df.rename(columns={'author': '作者', 'date': '日期', 'message': '提交信息'})
-        return result_df
-
-
-gc = GiteeCommits()
-for c in CommitFetcher("ascend", "modelzoo", params={
-    "author": "王姜奔"
-}):
-    gc.append(c)
-gc.save()
+        df = CommitsDataFrame(self.__commits)
+        df.format_date()
+        df.format_message()
+        df.group_by_date()
+        df.sort_by_date()
+        df.remap_columns()
+        df.export_to_excel('commits.xlsx')
