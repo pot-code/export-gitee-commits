@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "export-gitee-commits"
+version = "0.1.0"
+description = ""
+authors = ["pot-code <136290354@qq.com>"]
+readme = "README.md"
+packages = [{include = "export_gitee_commits"}]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+requests = "^2.31.0"
+pandas = "^2.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
