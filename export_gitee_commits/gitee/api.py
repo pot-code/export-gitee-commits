@@ -3,7 +3,7 @@ import requests
 BASE_URL = "https://gitee.com/api/v5"
 
 
-def get_commits(owner, repo, **params):
+def get_commits(owner, repo, params=None):
     """
     获取 gitee 的提交历史
     :param owner: 仓库所有人/组织的用户名
