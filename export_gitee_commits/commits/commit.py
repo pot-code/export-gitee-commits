@@ -82,5 +82,6 @@ class CommitsDataFrame:
     def remap_columns(self):
         self.__df = self.__df.rename(columns={'author': '作者', 'date': '日期', 'message': '提交信息'})
 
-    def export_to_excel(self, output):
-        self.__df.to_excel(output, sheet_name="Sheet1", index=False)
+    @property
+    def dataframe(self):
+        return self.__df
