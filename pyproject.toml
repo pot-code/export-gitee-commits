@@ -13,6 +13,9 @@ pandas = "^2.1.1"
 openpyxl = "^3.1.2"
 structlog = "^23.1.0"
 
+[tool.poetry.scripts]
+export-gitee-commits='export_gitee_commits.main:main'
+
 
 [build-system]
 requires = ["poetry-core"]

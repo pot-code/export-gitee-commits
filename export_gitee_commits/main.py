@@ -14,7 +14,8 @@ parser.add_argument('-t', '--token', type=str, help='gitee 第三方授权 token
 parser.add_argument('-a', '--author', type=str, help='限定提交用户')
 parser.add_argument('-v', '--verbose', action='store_true', help='诊断输出')
 
-if __name__ == '__main__':
+
+def main():
     args = parser.parse_args()
     if not args.verbose:
         structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(logging.INFO))
