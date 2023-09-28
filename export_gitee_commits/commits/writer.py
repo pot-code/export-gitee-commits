@@ -15,6 +15,10 @@ class ExcelWriter:
         self.__commits += commits
 
     def save(self, output_path: PathLike):
+        if len(self.__commits) == 0:
+            log.warning("no commits to write")
+            return
+
         df = CommitsDataFrame(self.__commits)
         df.format_date()
         df.format_message()
