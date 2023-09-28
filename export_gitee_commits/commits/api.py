@@ -1,6 +1,9 @@
 import requests
+import structlog
 
 BASE_URL = "https://gitee.com/api/v5"
+
+log = structlog.get_logger()
 
 
 def get_commits(owner, repo, params=None):
@@ -12,4 +15,5 @@ def get_commits(owner, repo, params=None):
     :return: 提交数据数组
     """
     url = f"{BASE_URL}/repos/{owner}/{repo}/commits"
+    log.debug(f"GET {url}", owner=owner, repo=repo, req_params=params)
     return requests.get(url, params=params)

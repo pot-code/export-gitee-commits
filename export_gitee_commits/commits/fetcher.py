@@ -38,6 +38,7 @@ class CommitFetcher:
         headers = res.headers
         self.__total_page = int(headers.get("total_page"), 10)
         self.__page += 1
+        log.info('fetched commit', page=self.__page - 1, total_page=self.__total_page)
         return [Commit(
             uid=e["author"]['id'],
             author=e["author"]['name'],

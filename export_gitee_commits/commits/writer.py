@@ -2,8 +2,11 @@ from os import PathLike
 from typing import List
 
 import pandas as pd
+import structlog
 
 from .fetcher import Commit
+
+log = structlog.get_logger()
 
 
 class CommitsDataFrame:
@@ -49,3 +52,4 @@ class CommitsExcelWriter:
         df.sort_by_date()
         df.remap_columns()
         df.export_to_excel(output_path)
+        log.info("save commits to %s", output_path, total=len(self.__commits))
