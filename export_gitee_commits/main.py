@@ -22,13 +22,13 @@ def main():
     if not args.verbose:
         structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(logging.INFO))
 
-    cw = ExcelWriter()
-    fm = CommitFilterManager([CommitMessageFilter()])
-    for cts in CommitFetcher(args.owner, args.repo, params={
+    w = ExcelWriter()
+    m = CommitFilterManager([CommitMessageFilter()])
+    for c in CommitFetcher(args.owner, args.repo, params={
         "access_token": args.token,
         "author": args.author,
         "since": args.since,
         "until": args.until
     }):
-        cw.append(filter(lambda c: fm.apply(c), cts))
-    cw.save(Path(args.output))
+        w.append(filter(m.apply, c))
+    w.save(Path(args.output))
