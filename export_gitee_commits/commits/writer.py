@@ -3,7 +3,7 @@ from typing import List
 
 import pandas as pd
 
-from .iter import Commit
+from .fetcher import Commit
 
 
 class CommitsDataFrame:
@@ -16,7 +16,7 @@ class CommitsDataFrame:
     def format_message(self):
         self.__df['message'] = self.__df['message'].apply(lambda x: x.replace('\n', ''))
 
-    def group_by_date(self):
+    def group(self):
         def number_messages(messages: List[str]):
             return [f'{i + 1}. {msg}' for i, msg in enumerate(messages)]
 
@@ -45,7 +45,7 @@ class CommitsExcelWriter:
         df = CommitsDataFrame(self.__commits)
         df.format_date()
         df.format_message()
-        df.group_by_date()
+        df.group()
         df.sort_by_date()
         df.remap_columns()
         df.export_to_excel(output_path)

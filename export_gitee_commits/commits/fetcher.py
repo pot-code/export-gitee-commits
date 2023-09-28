@@ -1,7 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+import structlog
+
 from .api import get_commits
+
+log = structlog.get_logger()
 
 
 @dataclass
@@ -12,7 +16,7 @@ class Commit:
     message: str
 
 
-class CommitIter:
+class CommitFetcher:
     def __init__(self, owner, repo, params=None):
         self.__total_page = 1
         self.__page = 1
