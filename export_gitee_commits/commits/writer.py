@@ -1,8 +1,9 @@
+from os import PathLike
 from typing import List
 
 import pandas as pd
 
-from .commit import Commit
+from .iter import Commit
 
 
 class CommitsDataFrame:
@@ -29,22 +30,22 @@ class CommitsDataFrame:
     def remap_columns(self):
         self.__df = self.__df.rename(columns={'author': '作者', 'date': '日期', 'message': '提交信息'})
 
-    def export_to_excel(self, path: str):
-        self.__df.to_excel(path, sheet_name="Sheet1", index=False)
+    def export_to_excel(self, output):
+        self.__df.to_excel(output, sheet_name="Sheet1", index=False)
 
 
-class CommitsWriter:
+class CommitsExcelWriter:
     def __init__(self):
-        self.__commits = []
+        self.__commits: list[Commit] = []
 
     def append(self, commits):
         self.__commits += commits
 
-    def save(self):
+    def save(self, output_path: PathLike):
         df = CommitsDataFrame(self.__commits)
         df.format_date()
         df.format_message()
         df.group_by_date()
         df.sort_by_date()
         df.remap_columns()
-        df.export_to_excel('commits.xlsx')
+        df.export_to_excel(output_path)
