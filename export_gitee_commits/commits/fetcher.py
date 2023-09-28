@@ -6,7 +6,6 @@ from .commit import Commit
 log = structlog.get_logger()
 
 
-
 class CommitFetcher:
     def __init__(self, owner, repo, params=None):
         self.__total_page = 1
