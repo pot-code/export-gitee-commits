@@ -21,7 +21,7 @@ class CommitFetcher:
         return self
 
     def __next__(self):
-        if self.__page > self.__total_page:
+        if self.__page > 4:
             raise StopIteration
 
         if self.__size == 0:

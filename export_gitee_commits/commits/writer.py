@@ -23,10 +23,16 @@ class CommitWorkbook:
 
     def format_cells(self):
         ws = self.__workbook.active
-        ws.column_dimensions['A'].alignment = Alignment(vertical='top', wrap_text=False)
-        ws.column_dimensions['B'].alignment = Alignment(vertical='top', wrap_text=False)
-        ws.column_dimensions['C'].alignment = Alignment(vertical='top', wrap_text=False)
-        ws.column_dimensions['D'].alignment = Alignment(vertical='top', wrap_text=True)
+        ws.column_dimensions['A'].width = 15
+        ws.column_dimensions['B'].width = 15
+        ws.column_dimensions['C'].width = 15
+        ws.column_dimensions['D'].width = 100
+
+        for row in ws.iter_rows(max_col=4):
+            row[0].alignment = Alignment(vertical='top')
+            row[1].alignment = Alignment(vertical='top')
+            row[2].alignment = Alignment(vertical='top')
+            row[3].alignment = Alignment(vertical='top', wrap_text=True)
 
     def save(self, path: PathLike):
         self.__workbook.save(path)
