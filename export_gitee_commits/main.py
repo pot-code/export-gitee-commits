@@ -12,6 +12,8 @@ parser.add_argument('repo', metavar="REPO", type=str, help='仓库名称')
 parser.add_argument('-o', '--output', type=str, required=True, help='导出 Excel 文件路径')
 parser.add_argument('-t', '--token', type=str, help='gitee 第三方授权 token')
 parser.add_argument('-a', '--author', type=str, help='限定提交用户')
+parser.add_argument('-s', '--since', type=str, help='开始日期（ISO 8601）')
+parser.add_argument('-u', '--until', type=str, help='结束日期（ISO 8601）')
 parser.add_argument('-v', '--verbose', action='store_true', help='诊断输出')
 
 
@@ -24,7 +26,9 @@ def main():
     fm = CommitFilterManager([CommitMessageFilter()])
     for cts in CommitFetcher(args.owner, args.repo, params={
         "access_token": args.token,
-        "author": args.author
+        "author": args.author,
+        "since": args.since,
+        "until": args.until
     }):
         cw.append(filter(lambda c: fm.apply(c), cts))
     cw.save(Path(args.output))
