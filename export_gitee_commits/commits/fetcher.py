@@ -1,19 +1,10 @@
-from dataclasses import dataclass
-from datetime import datetime
-
 import structlog
 
 from .api import get_commits
+from .commit import Commit
 
 log = structlog.get_logger()
 
-
-@dataclass
-class Commit:
-    uid: int
-    author: str
-    date: datetime
-    message: str
 
 
 class CommitFetcher:
@@ -38,10 +29,6 @@ class CommitFetcher:
         headers = res.headers
         self.__total_page = int(headers.get("total_page"), 10)
         self.__page += 1
-        log.info('fetched commit', page=self.__page - 1, total_page=self.__total_page)
-        return [Commit(
-            uid=e["author"]['id'],
-            author=e["author"]['name'],
-            date=datetime.fromisoformat(e['commit']['author']['date']),
-            message=e["commit"]['message'],
-        ) for e in res.json()]
+        data = res.json()
+        log.info('fetched commit', page=self.__page - 1, total_page=self.__total_page, size=len(data))
+        return [Commit.from_raw_data(e) for e in data]

@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 import structlog
 
-from .fetcher import Commit
+from .commit import Commit
 
 log = structlog.get_logger()
 
