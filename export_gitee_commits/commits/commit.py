@@ -2,7 +2,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 
-import pandas as pd
 import structlog
 
 log = structlog.get_logger()
@@ -56,32 +55,3 @@ class Commit:
         )
         log.debug('transformed commit', commit=c)
         return c
-
-
-class CommitsDataFrame:
-    def __init__(self, commits: list[Commit]):
-        self.__df = pd.DataFrame(commits)
-
-    def format_date(self):
-        self.__df['date'] = self.__df['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
-
-    def format_message(self):
-        self.__df['message'] = self.__df['message'].apply(lambda x: x.replace('\n', ''))
-
-    def group(self):
-        def number_messages(messages: list[str]):
-            return [f'{i + 1}. {msg}' for i, msg in enumerate(messages)]
-
-        grouped_df = self.__df.groupby(['uid', 'author', 'date'])['message'].agg(
-            lambda x: '\n'.join(number_messages(x)))
-        self.__df = grouped_df.reset_index()
-
-    def sort_by_date(self, ascending: bool = False):
-        self.__df = self.__df.sort_values(by='date', ascending=ascending)
-
-    def remap_columns(self):
-        self.__df = self.__df.rename(columns={'author': '作者', 'date': '日期', 'message': '提交信息'})
-
-    @property
-    def dataframe(self):
-        return self.__df

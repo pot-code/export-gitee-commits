@@ -4,7 +4,9 @@ from pathlib import Path
 
 import structlog
 
-from .commits import ExcelWriter, CommitFetcher, CommitFilterManager, CommitMessageFilter
+from .commits import CommitWorkbook, CommitsDataFrame, CommitFetcher, CommitFilterManager, CommitMessageFilter
+
+log = structlog.get_logger()
 
 parser = argparse.ArgumentParser(prog="export-gitee-commits", description='导出 gitee 提交历史')
 parser.add_argument('owner', metavar='OWNER', type=str, help='仓库所属用户')
@@ -22,13 +24,16 @@ def main():
     if not args.verbose:
         structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(logging.INFO))
 
-    w = ExcelWriter()
-    m = CommitFilterManager([CommitMessageFilter()])
+    commits = []
+    fm = CommitFilterManager([CommitMessageFilter()])
     for c in CommitFetcher(args.owner, args.repo, params={
         "access_token": args.token,
         "author": args.author,
         "since": args.since,
         "until": args.until
     }):
-        w.append(filter(m.apply, c))
-    w.save(Path(args.output))
+        commits += filter(fm.apply, c)
+    df = CommitsDataFrame(commits)
+    wb = CommitWorkbook(df.dataframe)
+    wb.save(Path(args.output))
+    log.info('save commits to %s', args.output)
