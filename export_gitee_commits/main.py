@@ -35,7 +35,15 @@ def main():
         "sha": args.branch
     }):
         commits += filter(fm.apply, c)
+
     df = CommitsDataFrame(commits)
+    df.format_message()
+    df.format_date()
+    df.group()
+    df.sort_by_date()
+    df.remap_columns()
+
     wb = CommitWorkbook(df.dataframe)
+    wb.format_cells()
     wb.save(Path(args.output))
     log.info('save commits to %s', args.output)
